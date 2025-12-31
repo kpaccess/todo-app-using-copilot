@@ -10,13 +10,13 @@ datasource db {
 }
 
 model Todo {
-  id          String   @id @default(cuid())
-  task        String
-  date        DateTime
-  duration    Int      // Duration in minutes
-  completed   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  task      String
+  date      DateTime
+  duration  Int // Duration in minutes
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([date])
   @@index([completed])

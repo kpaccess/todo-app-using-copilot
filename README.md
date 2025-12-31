@@ -27,12 +27,14 @@ npm run dev
 ```
 
 ### Prerequisites Installed
+
 - Next.js 16 with TypeScript
 - Material-UI (@mui/material)
 - Prisma with Prisma Postgres (free cloud database)
 - date-fns for date handling
 
 ### Database Setup
+
 - Created a free Prisma Postgres database (`todo-app-db`)
 - Configured database schema with Todo model
 - Applied migrations to set up the database structure
@@ -50,13 +52,14 @@ npm run dev
 
 - **Complete a Task**: Click the checkbox next to the task
 - **Delete a Task**: Click the delete icon (🗑️) on the right
-- **View Different Periods**: 
+- **View Different Periods**:
   - Switch between "Today's Tasks" and "This Week" tabs
   - See tasks organized by time period
 
 ### Weekly Progress
 
 The dashboard shows:
+
 - **Total Tasks**: All tasks scheduled for this week
 - **Completed**: Tasks you've finished (green)
 - **Remaining**: Tasks still to do (orange)
@@ -97,10 +100,13 @@ todo-app/
 ## 🔌 API Endpoints
 
 ### GET `/api/todos`
+
 Get all todos or filter by date range
 
 ### POST `/api/todos`
+
 Create a new todo
+
 ```json
 {
   "task": "Task description",
@@ -110,22 +116,27 @@ Create a new todo
 ```
 
 ### PATCH `/api/todos/[id]`
+
 Update a todo (e.g., toggle completion)
 
 ### DELETE `/api/todos/[id]`
+
 Delete a todo
 
 ### GET `/api/todos/weekly`
+
 Get weekly statistics for the current week
 
 ## 🗄️ Database Management
 
 View your database in Prisma Studio:
+
 ```bash
 npx prisma studio
 ```
 
 Apply new migrations:
+
 ```bash
 npx prisma migrate dev --name migration_name
 ```
@@ -133,6 +144,7 @@ npx prisma migrate dev --name migration_name
 ## 🎉 Next Steps
 
 You can enhance the app by adding:
+
 - User authentication
 - Categories/tags for tasks
 - Task priorities
