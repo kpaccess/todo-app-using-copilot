@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { verifyToken } from "@/lib/auth";
 import { startOfWeek, endOfWeek } from "date-fns";
 
 // GET weekly statistics
 export async function GET(request: NextRequest) {
   try {
+    // Verify authentication
+    const user = await verifyToken(request);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const dateParam = searchParams.get("date");
     const referenceDate = dateParam ? new Date(dateParam) : new Date();
@@ -14,6 +21,7 @@ export async function GET(request: NextRequest) {
 
     const todos = await prisma.todo.findMany({
       where: {
+        userId: user.userId,
         date: {
           gte: weekStart,
           lte: weekEnd,

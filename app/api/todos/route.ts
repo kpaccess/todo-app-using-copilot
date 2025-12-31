@@ -1,20 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { verifyToken } from "@/lib/auth";
 
 // GET all todos or filter by date range
 export async function GET(request: NextRequest) {
   try {
+    // Verify authentication
+    const user = await verifyToken(request);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const startDate = searchParams.get("startDate");
     const endDate = searchParams.get("endDate");
 
-    let where = {};
+    let where: any = {
+      userId: user.userId,
+    };
+
     if (startDate && endDate) {
-      where = {
-        date: {
-          gte: new Date(startDate),
-          lte: new Date(endDate),
-        },
+      where.date = {
+        gte: new Date(startDate),
+        lte: new Date(endDate),
       };
     }
 
@@ -38,6 +46,12 @@ export async function GET(request: NextRequest) {
 // POST create new todo
 export async function POST(request: NextRequest) {
   try {
+    // Verify authentication
+    const user = await verifyToken(request);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json();
     const { task, date, duration } = body;
 
@@ -53,6 +67,7 @@ export async function POST(request: NextRequest) {
         task,
         date: new Date(date),
         duration: parseInt(duration),
+        userId: user.userId,
       },
     });
 

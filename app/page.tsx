@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Container,
   Box,
@@ -20,8 +21,11 @@ import {
   Tab,
   CircularProgress,
   Stack,
+  AppBar,
+  Toolbar,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { format, startOfWeek, endOfWeek } from "date-fns";
 
 interface Todo {
@@ -42,6 +46,7 @@ interface WeeklyStats {
 }
 
 export default function Home() {
+  const router = useRouter();
   const [todos, setTodos] = useState<Todo[]>([]);
   const [weeklyStats, setWeeklyStats] = useState<WeeklyStats | null>(null);
   const [task, setTask] = useState("");
@@ -58,6 +63,10 @@ export default function Home() {
   const fetchTodos = async () => {
     try {
       const response = await fetch("/api/todos");
+      if (response.status === 401) {
+        router.push("/login");
+        return;
+      }
       const data = await response.json();
       setTodos(data);
     } catch (error) {
@@ -68,6 +77,10 @@ export default function Home() {
   const fetchWeeklyStats = async () => {
     try {
       const response = await fetch("/api/todos/weekly");
+      if (response.status === 401) {
+        router.push("/login");
+        return;
+      }
       const data = await response.json();
       setWeeklyStats(data);
     } catch (error) {
@@ -137,6 +150,23 @@ export default function Home() {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+      router.push("/login");
+      router.refresh();
+    } catch (error) {
+      console.error("Failed to logout:", error);
+    }
+  };
+
+  const toLocalDate = (input: string | Date) => {
+    const utcDate = typeof input === "string" ? new Date(input) : input;
+    return new Date(utcDate.getTime() + utcDate.getTimezoneOffset() * 60000);
+  };
+
   const getTodayTodos = () => {
     const todayLocal = format(new Date(), "yyyy-MM-dd");
 
@@ -144,12 +174,8 @@ export default function Home() {
       .filter((todo) => {
         if (!todo.date) return false;
 
-        const isoDateStr =
-          typeof todo.date === "string"
-            ? todo.date.slice(0, 10)
-            : format(todo.date, "yyyy-MM-dd");
-
-        return isoDateStr === todayLocal;
+        const localDateStr = format(toLocalDate(todo.date), "yyyy-MM-dd");
+        return localDateStr === todayLocal;
       })
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   };
@@ -160,7 +186,7 @@ export default function Home() {
 
     return todos
       .filter((todo) => {
-        const todoDate = new Date(todo.date);
+        const todoDate = toLocalDate(todo.date);
         return todoDate >= weekStart && todoDate <= weekEnd;
       })
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -191,7 +217,7 @@ export default function Home() {
             />
             <ListItemText
               primary={todo.task}
-              secondary={`${format(new Date(todo.date), "MMM dd, yyyy")} • ${
+              secondary={`${format(toLocalDate(todo.date), "MMM dd, yyyy")} • ${
                 todo.duration
               } minutes`}
               sx={{
@@ -215,132 +241,141 @@ export default function Home() {
   );
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Typography
-        variant="h3"
-        component="h1"
-        gutterBottom
-        align="center"
-        sx={{ mb: 4 }}
-      >
-        📝 My Todo App
-      </Typography>
-
-      {/* Add Todo Form */}
-      <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
-        <Typography variant="h6" gutterBottom>
-          Add New Task
-        </Typography>
-        <Stack spacing={2}>
-          <TextField
-            fullWidth
-            label="Task"
-            value={task}
-            onChange={(e) => setTask(e.target.value)}
-            placeholder="What do you need to do?"
-          />
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <TextField
-              fullWidth
-              type="date"
-              label="Date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              InputLabelProps={{ shrink: true }}
-            />
-            <TextField
-              fullWidth
-              type="number"
-              label="Duration (minutes)"
-              value={duration}
-              onChange={(e) => setDuration(e.target.value)}
-              placeholder="e.g., 30"
-            />
-          </Box>
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar position="static" sx={{ mb: 4 }}>
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            📝 My Todo App
+          </Typography>
           <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            onClick={handleAddTodo}
-            disabled={loading}
-            size="large"
+            color="inherit"
+            onClick={handleLogout}
+            startIcon={<LogoutIcon />}
           >
-            {loading ? <CircularProgress size={24} /> : "Add Task"}
+            Logout
           </Button>
-        </Stack>
-      </Paper>
+        </Toolbar>
+      </AppBar>
 
-      {/* Weekly Statistics */}
-      {weeklyStats && (
+      <Container maxWidth="md" sx={{ py: 4 }}>
+        {/* Add Todo Form */}
         <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
           <Typography variant="h6" gutterBottom>
-            📊 This Week's Progress
+            Add New Task
           </Typography>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
-            {format(new Date(weeklyStats.weekStart), "MMM dd")} -{" "}
-            {format(new Date(weeklyStats.weekEnd), "MMM dd, yyyy")}
-          </Typography>
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-              gap: 2,
-              mt: 1,
-            }}
+          <Stack spacing={2}>
+            <TextField
+              fullWidth
+              label="Task"
+              value={task}
+              onChange={(e) => setTask(e.target.value)}
+              placeholder="What do you need to do?"
+            />
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <TextField
+                fullWidth
+                type="date"
+                label="Date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+              />
+              <TextField
+                fullWidth
+                type="number"
+                label="Duration (minutes)"
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
+                placeholder="e.g., 30"
+              />
+            </Box>
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              onClick={handleAddTodo}
+              disabled={loading}
+              size="large"
+            >
+              {loading ? <CircularProgress size={24} /> : "Add Task"}
+            </Button>
+          </Stack>
+        </Paper>
+
+        {/* Weekly Statistics */}
+        {weeklyStats && (
+          <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
+            <Typography variant="h6" gutterBottom>
+              📊 This Week's Progress
+            </Typography>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              {format(new Date(weeklyStats.weekStart), "MMM dd")} -{" "}
+              {format(new Date(weeklyStats.weekEnd), "MMM dd, yyyy")}
+            </Typography>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+                gap: 2,
+                mt: 1,
+              }}
+            >
+              <Card>
+                <CardContent>
+                  <Typography color="text.secondary" variant="body2">
+                    Total Tasks
+                  </Typography>
+                  <Typography variant="h4">{weeklyStats.total}</Typography>
+                </CardContent>
+              </Card>
+              <Card sx={{ bgcolor: "success.light" }}>
+                <CardContent>
+                  <Typography color="text.secondary" variant="body2">
+                    Completed
+                  </Typography>
+                  <Typography variant="h4">{weeklyStats.completed}</Typography>
+                </CardContent>
+              </Card>
+              <Card sx={{ bgcolor: "warning.light" }}>
+                <CardContent>
+                  <Typography color="text.secondary" variant="body2">
+                    Remaining
+                  </Typography>
+                  <Typography variant="h4">
+                    {weeklyStats.notCompleted}
+                  </Typography>
+                </CardContent>
+              </Card>
+              <Card sx={{ bgcolor: "info.light" }}>
+                <CardContent>
+                  <Typography color="text.secondary" variant="body2">
+                    Time (min)
+                  </Typography>
+                  <Typography variant="h4">
+                    {weeklyStats.totalDuration}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Box>
+          </Paper>
+        )}
+
+        {/* Tabs for Today and This Week */}
+        <Paper elevation={3}>
+          <Tabs
+            value={tabValue}
+            onChange={(e, newValue) => setTabValue(newValue)}
+            variant="fullWidth"
           >
-            <Card>
-              <CardContent>
-                <Typography color="text.secondary" variant="body2">
-                  Total Tasks
-                </Typography>
-                <Typography variant="h4">{weeklyStats.total}</Typography>
-              </CardContent>
-            </Card>
-            <Card sx={{ bgcolor: "success.light" }}>
-              <CardContent>
-                <Typography color="text.secondary" variant="body2">
-                  Completed
-                </Typography>
-                <Typography variant="h4">{weeklyStats.completed}</Typography>
-              </CardContent>
-            </Card>
-            <Card sx={{ bgcolor: "warning.light" }}>
-              <CardContent>
-                <Typography color="text.secondary" variant="body2">
-                  Remaining
-                </Typography>
-                <Typography variant="h4">{weeklyStats.notCompleted}</Typography>
-              </CardContent>
-            </Card>
-            <Card sx={{ bgcolor: "info.light" }}>
-              <CardContent>
-                <Typography color="text.secondary" variant="body2">
-                  Time (min)
-                </Typography>
-                <Typography variant="h4">
-                  {weeklyStats.totalDuration}
-                </Typography>
-              </CardContent>
-            </Card>
+            <Tab label={`Today's Tasks (${getTodayTodos().length})`} />
+            <Tab label={`This Week (${getWeekTodos().length})`} />
+          </Tabs>
+          <Box sx={{ p: 2 }}>
+            {tabValue === 0 && renderTodoList(getTodayTodos())}
+            {tabValue === 1 && renderTodoList(getWeekTodos())}
           </Box>
         </Paper>
-      )}
-
-      {/* Tabs for Today and This Week */}
-      <Paper elevation={3}>
-        <Tabs
-          value={tabValue}
-          onChange={(e, newValue) => setTabValue(newValue)}
-          variant="fullWidth"
-        >
-          <Tab label={`Today's Tasks (${getTodayTodos().length})`} />
-          <Tab label={`This Week (${getWeekTodos().length})`} />
-        </Tabs>
-        <Box sx={{ p: 2 }}>
-          {tabValue === 0 && renderTodoList(getTodayTodos())}
-          {tabValue === 1 && renderTodoList(getWeekTodos())}
-        </Box>
-      </Paper>
-    </Container>
+      </Container>
+    </Box>
   );
 }
