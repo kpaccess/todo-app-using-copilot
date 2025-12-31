@@ -22,10 +22,10 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const completed = todos.filter((todo) => todo.completed).length;
-    const notCompleted = todos.filter((todo) => !todo.completed).length;
+    const completed = todos.filter((todo: Todo) => todo.completed).length;
+    const notCompleted = todos.filter((todo: Todo) => !todo.completed).length;
     const totalDuration = todos
-      .filter((todo) => todo.completed)
+      .filter((todo: Todo) => todo.completed)
       .reduce((sum, todo) => sum + todo.duration, 0);
 
     return NextResponse.json({
