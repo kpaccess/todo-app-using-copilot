@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     ).length;
     const totalDuration = todos
       .filter((todo: TodoItem) => todo.completed)
-      .reduce((sum, todo) => sum + todo.duration, 0);
+      .reduce((sum: number, todo: TodoItem) => sum + todo.duration, 0);
 
     return NextResponse.json({
       weekStart,
