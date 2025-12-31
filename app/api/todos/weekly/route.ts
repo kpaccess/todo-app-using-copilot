@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { startOfWeek, endOfWeek } from "date-fns";
-import type { Todo } from "@prisma/client";
 
 // GET weekly statistics
 export async function GET(request: NextRequest) {
@@ -13,7 +12,7 @@ export async function GET(request: NextRequest) {
     const weekStart = startOfWeek(referenceDate, { weekStartsOn: 0 }); // Sunday
     const weekEnd = endOfWeek(referenceDate, { weekStartsOn: 0 }); // Saturday
 
-    const todos: Todo[] = await prisma.todo.findMany({
+    const todos = await prisma.todo.findMany({
       where: {
         date: {
           gte: weekStart,
@@ -22,10 +21,10 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const completed = todos.filter((todo: Todo) => todo.completed).length;
-    const notCompleted = todos.filter((todo: Todo) => !todo.completed).length;
+    const completed = todos.filter((todo) => todo.completed).length;
+    const notCompleted = todos.filter((todo) => !todo.completed).length;
     const totalDuration = todos
-      .filter((todo: Todo) => todo.completed)
+      .filter((todo) => todo.completed)
       .reduce((sum, todo) => sum + todo.duration, 0);
 
     return NextResponse.json({
