@@ -6,6 +6,9 @@ export async function GET() {
     const count = await prisma.user.count();
     return NextResponse.json({ count });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch user count" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch user count" },
+      { status: 500 }
+    );
   }
 }

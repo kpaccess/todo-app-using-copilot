@@ -72,10 +72,25 @@ export default function LoginPage() {
   return (
     <Container maxWidth="sm" sx={{ py: 8 }}>
       <Box sx={{ mb: 2, display: "flex", justifyContent: "center" }}>
-        <Paper elevation={2} sx={{ px: 3, py: 1, borderRadius: 2, bgcolor: "info.light", color: "info.contrastText", fontWeight: 600, fontSize: 18 }}>
+        <Paper
+          elevation={2}
+          sx={{
+            px: 3,
+            py: 1,
+            borderRadius: 2,
+            bgcolor: "info.light",
+            color: "info.contrastText",
+            fontWeight: 600,
+            fontSize: 18,
+          }}
+        >
           {userCount !== null ? (
             <>
-              <span role="img" aria-label="user">👤</span> Users signed up: <span style={{ fontWeight: 700 }}>{userCount}</span>
+              <span role="img" aria-label="user">
+                👤
+              </span>{" "}
+              Users signed up:{" "}
+              <span style={{ fontWeight: 700 }}>{userCount}</span>
             </>
           ) : (
             "Loading user count..."
