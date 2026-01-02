@@ -253,7 +253,7 @@ export default function Home() {
           onAdd={handleAddTodo}
         />
 
-        {weeklyStats && <WeeklyStats stats={weeklyStats} />}
+        {weeklyStats && <WeeklyStats {...weeklyStats} />}
 
         <Paper elevation={3}>
           <Tabs

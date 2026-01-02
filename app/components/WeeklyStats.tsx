@@ -1,20 +1,23 @@
 import { Paper, Typography, Box, Card, CardContent } from "@mui/material";
 import { format } from "date-fns";
-import { WeeklyStats } from "../../app/types";
+import type { WeeklyStats } from "../../app/types";
 
-interface WeeklyStatsProps {
-  stats: WeeklyStats;
-}
-
-export default function WeeklyStats({ stats }: WeeklyStatsProps) {
+export default function WeeklyStats({
+  total,
+  completed,
+  notCompleted,
+  totalDuration,
+  weekStart,
+  weekEnd,
+}: WeeklyStats) {
   return (
     <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
       <Typography variant="h6" gutterBottom>
         📊 This Week&apos;s Progress
       </Typography>
       <Typography variant="body2" color="text.secondary" gutterBottom>
-        {format(new Date(stats.weekStart), "MMM dd")} -{" "}
-        {format(new Date(stats.weekEnd), "MMM dd, yyyy")}
+        {format(new Date(weekStart), "MMM dd")} -{" "}
+        {format(new Date(weekEnd), "MMM dd, yyyy")}
       </Typography>
       <Box
         sx={{
@@ -29,7 +32,7 @@ export default function WeeklyStats({ stats }: WeeklyStatsProps) {
             <Typography color="text.secondary" variant="body2">
               Total Tasks
             </Typography>
-            <Typography variant="h4">{stats.total}</Typography>
+            <Typography variant="h4">{total}</Typography>
           </CardContent>
         </Card>
         <Card sx={{ bgcolor: "success.light" }}>
@@ -37,7 +40,7 @@ export default function WeeklyStats({ stats }: WeeklyStatsProps) {
             <Typography color="text.secondary" variant="body2">
               Completed
             </Typography>
-            <Typography variant="h4">{stats.completed}</Typography>
+            <Typography variant="h4">{completed}</Typography>
           </CardContent>
         </Card>
         <Card sx={{ bgcolor: "warning.light" }}>
@@ -45,7 +48,7 @@ export default function WeeklyStats({ stats }: WeeklyStatsProps) {
             <Typography color="text.secondary" variant="body2">
               Remaining
             </Typography>
-            <Typography variant="h4">{stats.notCompleted}</Typography>
+            <Typography variant="h4">{notCompleted}</Typography>
           </CardContent>
         </Card>
         <Card sx={{ bgcolor: "info.light" }}>
@@ -53,7 +56,7 @@ export default function WeeklyStats({ stats }: WeeklyStatsProps) {
             <Typography color="text.secondary" variant="body2">
               Time (min)
             </Typography>
-            <Typography variant="h4">{stats.totalDuration}</Typography>
+            <Typography variant="h4">{totalDuration}</Typography>
           </CardContent>
         </Card>
       </Box>
