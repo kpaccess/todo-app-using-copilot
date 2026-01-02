@@ -12,7 +12,9 @@ import {
   Toolbar,
   Button,
   Typography,
+  TextField,
 } from "@mui/material";
+import Pagination from "@mui/material/Pagination";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { format, startOfWeek, endOfWeek } from "date-fns";
 import TodoList from "./components/TodoList";
@@ -35,6 +37,9 @@ export default function Home() {
   const [editDate, setEditDate] = useState("");
   const [editDuration, setEditDuration] = useState("");
   const [userCount, setUserCount] = useState<number | null>(null);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const [pageToday, setPageToday] = useState<number>(1);
+  const [pageWeek, setPageWeek] = useState<number>(1);
 
   useEffect(() => {
     fetchTodos();
@@ -264,43 +269,107 @@ export default function Home() {
             <Tab label={`Today's Tasks (${getTodayTodos().length})`} />
             <Tab label={`This Week (${getWeekTodos().length})`} />
           </Tabs>
+          <Box
+            sx={{
+              mb: 2,
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              px: 2,
+              pt: 2,
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Items per page
+            </Typography>
+            <TextField
+              type="number"
+              size="small"
+              value={itemsPerPage}
+              onChange={(e) => {
+                const n = Number(e.target.value) || 1;
+                setItemsPerPage(Math.max(1, n));
+                setPageToday(1);
+                setPageWeek(1);
+              }}
+              inputProps={{ min: 1, style: { width: 80 } }}
+            />
+          </Box>
           <Box sx={{ p: 2 }}>
-            {tabValue === 0 && (
-              <TodoList
-                todos={getTodayTodos()}
-                editId={editId}
-                editTask={editTask}
-                editDate={editDate}
-                editDuration={editDuration}
-                loading={loading}
-                onToggleComplete={handleToggleComplete}
-                onEditClick={handleEditClick}
-                onEditCancel={handleEditCancel}
-                onEditSave={handleEditSave}
-                onEditTaskChange={setEditTask}
-                onEditDateChange={setEditDate}
-                onEditDurationChange={setEditDuration}
-                onDelete={handleDeleteTodo}
-              />
-            )}
-            {tabValue === 1 && (
-              <TodoList
-                todos={getWeekTodos()}
-                editId={editId}
-                editTask={editTask}
-                editDate={editDate}
-                editDuration={editDuration}
-                loading={loading}
-                onToggleComplete={handleToggleComplete}
-                onEditClick={handleEditClick}
-                onEditCancel={handleEditCancel}
-                onEditSave={handleEditSave}
-                onEditTaskChange={setEditTask}
-                onEditDateChange={setEditDate}
-                onEditDurationChange={setEditDuration}
-                onDelete={handleDeleteTodo}
-              />
-            )}
+            {tabValue === 0 &&
+              (() => {
+                const all = getTodayTodos();
+                const count = Math.max(1, Math.ceil(all.length / itemsPerPage));
+                const start = (pageToday - 1) * itemsPerPage;
+                const slice = all.slice(start, start + itemsPerPage);
+                return (
+                  <>
+                    <TodoList
+                      todos={slice}
+                      editId={editId}
+                      editTask={editTask}
+                      editDate={editDate}
+                      editDuration={editDuration}
+                      loading={loading}
+                      onToggleComplete={handleToggleComplete}
+                      onEditClick={handleEditClick}
+                      onEditCancel={handleEditCancel}
+                      onEditSave={handleEditSave}
+                      onEditTaskChange={setEditTask}
+                      onEditDateChange={setEditDate}
+                      onEditDurationChange={setEditDuration}
+                      onDelete={handleDeleteTodo}
+                    />
+                    <Box
+                      sx={{ display: "flex", justifyContent: "center", mt: 2 }}
+                    >
+                      <Pagination
+                        count={count}
+                        page={pageToday}
+                        onChange={(_, p) => setPageToday(p)}
+                        color="primary"
+                      />
+                    </Box>
+                  </>
+                );
+              })()}
+            {tabValue === 1 &&
+              (() => {
+                const all = getWeekTodos();
+                const count = Math.max(1, Math.ceil(all.length / itemsPerPage));
+                const start = (pageWeek - 1) * itemsPerPage;
+                const slice = all.slice(start, start + itemsPerPage);
+                return (
+                  <>
+                    <TodoList
+                      todos={slice}
+                      editId={editId}
+                      editTask={editTask}
+                      editDate={editDate}
+                      editDuration={editDuration}
+                      loading={loading}
+                      onToggleComplete={handleToggleComplete}
+                      onEditClick={handleEditClick}
+                      onEditCancel={handleEditCancel}
+                      onEditSave={handleEditSave}
+                      onEditTaskChange={setEditTask}
+                      onEditDateChange={setEditDate}
+                      onEditDurationChange={setEditDuration}
+                      onDelete={handleDeleteTodo}
+                    />
+                    <Box
+                      sx={{ display: "flex", justifyContent: "center", mt: 2 }}
+                    >
+                      <Pagination
+                        count={count}
+                        page={pageWeek}
+                        onChange={(_, p) => setPageWeek(p)}
+                        color="primary"
+                      />
+                    </Box>
+                  </>
+                );
+              })()}
           </Box>
         </Paper>
       </Container>
