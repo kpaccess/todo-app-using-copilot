@@ -113,7 +113,7 @@ export default function LoginPage() {
               onClick={handleRegister}
               disabled={loading}
             >
-              Don't have an account? Sign Up
+              Don&apos;t have an account? Sign Up
             </Button>
           </Stack>
         </Box>

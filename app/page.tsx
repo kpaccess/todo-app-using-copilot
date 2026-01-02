@@ -5,58 +5,31 @@ import { useRouter } from "next/navigation";
 import {
   Container,
   Box,
-  Typography,
-  TextField,
-  Button,
-  Checkbox,
-  List,
-  ListItem,
-  ListItemText,
-  IconButton,
   Paper,
-  Card,
-  CardContent,
   Tabs,
   Tab,
-  CircularProgress,
-  Stack,
   AppBar,
   Toolbar,
+  Button,
+  Typography,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
 import LogoutIcon from "@mui/icons-material/Logout";
-import EditIcon from "@mui/icons-material/Edit";
-import SaveIcon from "@mui/icons-material/Save";
-import CloseIcon from "@mui/icons-material/Close";
 import { format, startOfWeek, endOfWeek } from "date-fns";
-
-interface Todo {
-  id: string;
-  task: string;
-  date: string;
-  duration: number;
-  completed: boolean;
-}
-
-interface WeeklyStats {
-  total: number;
-  completed: number;
-  notCompleted: number;
-  totalDuration: number;
-  weekStart: string;
-  weekEnd: string;
-}
+import TodoList from "./components/TodoList";
+import AddTodoForm from "./components/AddTodoForm";
+import WeeklyStats from "./components/WeeklyStats";
+import { Todo, WeeklyStats as WeeklyStatsType } from "./types";
+import { toLocalDate } from "./utils";
 
 export default function Home() {
   const router = useRouter();
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [weeklyStats, setWeeklyStats] = useState<WeeklyStats | null>(null);
+  const [weeklyStats, setWeeklyStats] = useState<WeeklyStatsType | null>(null);
   const [task, setTask] = useState("");
   const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [duration, setDuration] = useState("");
   const [loading, setLoading] = useState(false);
   const [tabValue, setTabValue] = useState(0);
-
   const [editId, setEditId] = useState<string | null>(null);
   const [editTask, setEditTask] = useState("");
   const [editDate, setEditDate] = useState("");
@@ -242,103 +215,7 @@ export default function Home() {
     }
   };
 
-  const renderTodoList = (todoList: Todo[]) => (
-    <List>
-      {todoList.length === 0 ? (
-        <Typography variant="body2" color="text.secondary" sx={{ p: 2 }}>
-          No tasks for this period
-        </Typography>
-      ) : (
-        todoList.map((todo) => (
-          <ListItem
-            key={todo.id}
-            sx={{
-              bgcolor: "background.paper",
-              mb: 1,
-              borderRadius: 1,
-              border: "1px solid",
-              borderColor: "divider",
-            }}
-          >
-            <Checkbox
-              checked={todo.completed}
-              onChange={() => handleToggleComplete(todo.id, todo.completed)}
-              sx={{ mr: 1 }}
-              disabled={editId === todo.id}
-            />
-            {editId === todo.id ? (
-              <Box
-                sx={{ flex: 1, display: "flex", gap: 1, alignItems: "center" }}
-              >
-                <TextField
-                  value={editTask}
-                  onChange={(e) => setEditTask(e.target.value)}
-                  size="small"
-                  sx={{ minWidth: 120 }}
-                />
-                <TextField
-                  type="date"
-                  value={editDate}
-                  onChange={(e) => setEditDate(e.target.value)}
-                  size="small"
-                  sx={{ minWidth: 120 }}
-                  InputLabelProps={{ shrink: true }}
-                />
-                <TextField
-                  type="number"
-                  value={editDuration}
-                  onChange={(e) => setEditDuration(e.target.value)}
-                  size="small"
-                  sx={{ minWidth: 80 }}
-                  inputProps={{ min: 1 }}
-                />
-                <IconButton
-                  aria-label="save"
-                  color="primary"
-                  onClick={() => handleEditSave(todo.id)}
-                  disabled={loading}
-                >
-                  <SaveIcon />
-                </IconButton>
-                <IconButton aria-label="cancel" onClick={handleEditCancel}>
-                  <CloseIcon />
-                </IconButton>
-              </Box>
-            ) : (
-              <>
-                <ListItemText
-                  primary={todo.task}
-                  secondary={`${format(
-                    toLocalDate(todo.date),
-                    "MMM dd, yyyy"
-                  )} • ${todo.duration} minutes`}
-                  sx={{
-                    textDecoration: todo.completed ? "line-through" : "none",
-                    opacity: todo.completed ? 0.6 : 1,
-                  }}
-                />
-                <IconButton
-                  edge="end"
-                  aria-label="edit"
-                  onClick={() => handleEditClick(todo)}
-                  sx={{ mr: 1 }}
-                >
-                  <EditIcon />
-                </IconButton>
-                <IconButton
-                  edge="end"
-                  aria-label="delete"
-                  onClick={() => handleDeleteTodo(todo.id)}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </>
-            )}
-          </ListItem>
-        ))
-      )}
-    </List>
-  );
+  // ...existing code...
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -358,109 +235,19 @@ export default function Home() {
       </AppBar>
 
       <Container maxWidth="md" sx={{ py: 4 }}>
-        {/* Add Todo Form */}
-        <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
-          <Typography variant="h6" gutterBottom>
-            Add New Task
-          </Typography>
-          <Stack spacing={2}>
-            <TextField
-              fullWidth
-              label="Task"
-              value={task}
-              onChange={(e) => setTask(e.target.value)}
-              placeholder="What do you need to do?"
-            />
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <TextField
-                fullWidth
-                type="date"
-                label="Date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                InputLabelProps={{ shrink: true }}
-              />
-              <TextField
-                fullWidth
-                type="number"
-                label="Duration (minutes)"
-                value={duration}
-                onChange={(e) => setDuration(e.target.value)}
-                placeholder="e.g., 30"
-              />
-            </Box>
-            <Button
-              fullWidth
-              variant="contained"
-              color="primary"
-              onClick={handleAddTodo}
-              disabled={loading}
-              size="large"
-            >
-              {loading ? <CircularProgress size={24} /> : "Add Task"}
-            </Button>
-          </Stack>
-        </Paper>
+        <AddTodoForm
+          task={task}
+          date={date}
+          duration={duration}
+          loading={loading}
+          onTaskChange={setTask}
+          onDateChange={setDate}
+          onDurationChange={setDuration}
+          onAdd={handleAddTodo}
+        />
 
-        {/* Weekly Statistics */}
-        {weeklyStats && (
-          <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
-            <Typography variant="h6" gutterBottom>
-              📊 This Week's Progress
-            </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-              {format(new Date(weeklyStats.weekStart), "MMM dd")} -{" "}
-              {format(new Date(weeklyStats.weekEnd), "MMM dd, yyyy")}
-            </Typography>
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-                gap: 2,
-                mt: 1,
-              }}
-            >
-              <Card>
-                <CardContent>
-                  <Typography color="text.secondary" variant="body2">
-                    Total Tasks
-                  </Typography>
-                  <Typography variant="h4">{weeklyStats.total}</Typography>
-                </CardContent>
-              </Card>
-              <Card sx={{ bgcolor: "success.light" }}>
-                <CardContent>
-                  <Typography color="text.secondary" variant="body2">
-                    Completed
-                  </Typography>
-                  <Typography variant="h4">{weeklyStats.completed}</Typography>
-                </CardContent>
-              </Card>
-              <Card sx={{ bgcolor: "warning.light" }}>
-                <CardContent>
-                  <Typography color="text.secondary" variant="body2">
-                    Remaining
-                  </Typography>
-                  <Typography variant="h4">
-                    {weeklyStats.notCompleted}
-                  </Typography>
-                </CardContent>
-              </Card>
-              <Card sx={{ bgcolor: "info.light" }}>
-                <CardContent>
-                  <Typography color="text.secondary" variant="body2">
-                    Time (min)
-                  </Typography>
-                  <Typography variant="h4">
-                    {weeklyStats.totalDuration}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Box>
-          </Paper>
-        )}
+        {weeklyStats && <WeeklyStats stats={weeklyStats} />}
 
-        {/* Tabs for Today and This Week */}
         <Paper elevation={3}>
           <Tabs
             value={tabValue}
@@ -471,8 +258,42 @@ export default function Home() {
             <Tab label={`This Week (${getWeekTodos().length})`} />
           </Tabs>
           <Box sx={{ p: 2 }}>
-            {tabValue === 0 && renderTodoList(getTodayTodos())}
-            {tabValue === 1 && renderTodoList(getWeekTodos())}
+            {tabValue === 0 && (
+              <TodoList
+                todos={getTodayTodos()}
+                editId={editId}
+                editTask={editTask}
+                editDate={editDate}
+                editDuration={editDuration}
+                loading={loading}
+                onToggleComplete={handleToggleComplete}
+                onEditClick={handleEditClick}
+                onEditCancel={handleEditCancel}
+                onEditSave={handleEditSave}
+                onEditTaskChange={setEditTask}
+                onEditDateChange={setEditDate}
+                onEditDurationChange={setEditDuration}
+                onDelete={handleDeleteTodo}
+              />
+            )}
+            {tabValue === 1 && (
+              <TodoList
+                todos={getWeekTodos()}
+                editId={editId}
+                editTask={editTask}
+                editDate={editDate}
+                editDuration={editDuration}
+                loading={loading}
+                onToggleComplete={handleToggleComplete}
+                onEditClick={handleEditClick}
+                onEditCancel={handleEditCancel}
+                onEditSave={handleEditSave}
+                onEditTaskChange={setEditTask}
+                onEditDateChange={setEditDate}
+                onEditDurationChange={setEditDuration}
+                onDelete={handleDeleteTodo}
+              />
+            )}
           </Box>
         </Paper>
       </Container>
