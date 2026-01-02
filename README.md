@@ -39,6 +39,38 @@ npm run dev
 - Configured database schema with Todo model
 - Applied migrations to set up the database structure
 
+#### 1. Set the Prisma Database URL
+
+Create a `.env` file in the project root (if it doesn't exist) and add your Prisma Postgres connection string:
+
+```env
+DATABASE_URL="<your-prisma-postgres-url>"
+```
+
+You can find your Prisma Postgres URL in the Prisma Data Platform dashboard or use the example from the template. Example:
+
+```env
+DATABASE_URL="prisma+postgres://accelerate.prisma-data.net/?api_key=..."
+```
+
+#### 2. Run Migrations
+
+Apply the database schema and migrations:
+
+```bash
+npx prisma migrate dev --name init
+```
+
+#### 3. Start the App
+
+Run the development server (make sure your `.env` is set):
+
+```bash
+npm run dev
+```
+
+The app will use the database specified in your `DATABASE_URL`.
+
 ## 🎯 How to Use
 
 ### Adding a Task

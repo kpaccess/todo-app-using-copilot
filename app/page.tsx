@@ -12,7 +12,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemSecondaryAction,
   IconButton,
   Paper,
   Card,
@@ -26,6 +25,9 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LogoutIcon from "@mui/icons-material/Logout";
+import EditIcon from "@mui/icons-material/Edit";
+import SaveIcon from "@mui/icons-material/Save";
+import CloseIcon from "@mui/icons-material/Close";
 import { format, startOfWeek, endOfWeek } from "date-fns";
 
 interface Todo {
@@ -55,9 +57,15 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [tabValue, setTabValue] = useState(0);
 
+  const [editId, setEditId] = useState<string | null>(null);
+  const [editTask, setEditTask] = useState("");
+  const [editDate, setEditDate] = useState("");
+  const [editDuration, setEditDuration] = useState("");
+
   useEffect(() => {
     fetchTodos();
     fetchWeeklyStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchTodos = async () => {
@@ -192,6 +200,48 @@ export default function Home() {
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   };
 
+  const handleEditClick = (todo: Todo) => {
+    setEditId(todo.id);
+    setEditTask(todo.task);
+    setEditDate(format(toLocalDate(todo.date), "yyyy-MM-dd"));
+    setEditDuration(todo.duration.toString());
+  };
+
+  const handleEditCancel = () => {
+    setEditId(null);
+    setEditTask("");
+    setEditDate("");
+    setEditDuration("");
+  };
+
+  const handleEditSave = async (id: string) => {
+    if (!editTask || !editDate || !editDuration) {
+      alert("Please fill in all fields");
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/todos/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          task: editTask,
+          date: editDate,
+          duration: parseInt(editDuration),
+        }),
+      });
+      if (response.ok) {
+        handleEditCancel();
+        fetchTodos();
+        fetchWeeklyStats();
+      }
+    } catch (error) {
+      console.error("Failed to edit todo:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const renderTodoList = (todoList: Todo[]) => (
     <List>
       {todoList.length === 0 ? (
@@ -214,26 +264,76 @@ export default function Home() {
               checked={todo.completed}
               onChange={() => handleToggleComplete(todo.id, todo.completed)}
               sx={{ mr: 1 }}
+              disabled={editId === todo.id}
             />
-            <ListItemText
-              primary={todo.task}
-              secondary={`${format(toLocalDate(todo.date), "MMM dd, yyyy")} • ${
-                todo.duration
-              } minutes`}
-              sx={{
-                textDecoration: todo.completed ? "line-through" : "none",
-                opacity: todo.completed ? 0.6 : 1,
-              }}
-            />
-            <ListItemSecondaryAction>
-              <IconButton
-                edge="end"
-                aria-label="delete"
-                onClick={() => handleDeleteTodo(todo.id)}
+            {editId === todo.id ? (
+              <Box
+                sx={{ flex: 1, display: "flex", gap: 1, alignItems: "center" }}
               >
-                <DeleteIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
+                <TextField
+                  value={editTask}
+                  onChange={(e) => setEditTask(e.target.value)}
+                  size="small"
+                  sx={{ minWidth: 120 }}
+                />
+                <TextField
+                  type="date"
+                  value={editDate}
+                  onChange={(e) => setEditDate(e.target.value)}
+                  size="small"
+                  sx={{ minWidth: 120 }}
+                  InputLabelProps={{ shrink: true }}
+                />
+                <TextField
+                  type="number"
+                  value={editDuration}
+                  onChange={(e) => setEditDuration(e.target.value)}
+                  size="small"
+                  sx={{ minWidth: 80 }}
+                  inputProps={{ min: 1 }}
+                />
+                <IconButton
+                  aria-label="save"
+                  color="primary"
+                  onClick={() => handleEditSave(todo.id)}
+                  disabled={loading}
+                >
+                  <SaveIcon />
+                </IconButton>
+                <IconButton aria-label="cancel" onClick={handleEditCancel}>
+                  <CloseIcon />
+                </IconButton>
+              </Box>
+            ) : (
+              <>
+                <ListItemText
+                  primary={todo.task}
+                  secondary={`${format(
+                    toLocalDate(todo.date),
+                    "MMM dd, yyyy"
+                  )} • ${todo.duration} minutes`}
+                  sx={{
+                    textDecoration: todo.completed ? "line-through" : "none",
+                    opacity: todo.completed ? 0.6 : 1,
+                  }}
+                />
+                <IconButton
+                  edge="end"
+                  aria-label="edit"
+                  onClick={() => handleEditClick(todo)}
+                  sx={{ mr: 1 }}
+                >
+                  <EditIcon />
+                </IconButton>
+                <IconButton
+                  edge="end"
+                  aria-label="delete"
+                  onClick={() => handleDeleteTodo(todo.id)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </>
+            )}
           </ListItem>
         ))
       )}
