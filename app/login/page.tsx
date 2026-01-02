@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Container,
@@ -19,6 +19,20 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [userCount, setUserCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchUserCount = async () => {
+      try {
+        const response = await fetch("/api/users/count");
+        const data = await response.json();
+        setUserCount(data.count);
+      } catch (error) {
+        setUserCount(null);
+      }
+    };
+    fetchUserCount();
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,6 +71,17 @@ export default function LoginPage() {
 
   return (
     <Container maxWidth="sm" sx={{ py: 8 }}>
+      <Box sx={{ mb: 2, display: "flex", justifyContent: "center" }}>
+        <Paper elevation={2} sx={{ px: 3, py: 1, borderRadius: 2, bgcolor: "info.light", color: "info.contrastText", fontWeight: 600, fontSize: 18 }}>
+          {userCount !== null ? (
+            <>
+              <span role="img" aria-label="user">👤</span> Users signed up: <span style={{ fontWeight: 700 }}>{userCount}</span>
+            </>
+          ) : (
+            "Loading user count..."
+          )}
+        </Paper>
+      </Box>
       <Paper elevation={3} sx={{ p: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
           📝 Todo App Login

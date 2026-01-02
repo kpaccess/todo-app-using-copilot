@@ -34,12 +34,24 @@ export default function Home() {
   const [editTask, setEditTask] = useState("");
   const [editDate, setEditDate] = useState("");
   const [editDuration, setEditDuration] = useState("");
+  const [userCount, setUserCount] = useState<number | null>(null);
 
   useEffect(() => {
     fetchTodos();
     fetchWeeklyStats();
+    fetchUserCount();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const fetchUserCount = async () => {
+    try {
+      const response = await fetch("/api/users/count");
+      const data = await response.json();
+      setUserCount(data.count);
+    } catch (error) {
+      setUserCount(null);
+    }
+  };
 
   const fetchTodos = async () => {
     try {
@@ -143,11 +155,6 @@ export default function Home() {
     }
   };
 
-  const toLocalDate = (input: string | Date) => {
-    const utcDate = typeof input === "string" ? new Date(input) : input;
-    return new Date(utcDate.getTime() + utcDate.getTimezoneOffset() * 60000);
-  };
-
   const getTodayTodos = () => {
     const todayLocal = format(new Date(), "yyyy-MM-dd");
 
@@ -216,7 +223,7 @@ export default function Home() {
   };
 
   // ...existing code...
-
+  console.log("User Count:", userCount);
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" sx={{ mb: 4 }}>
