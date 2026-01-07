@@ -5,6 +5,7 @@ A modern, full-featured productivity application built with Next.js, Material-UI
 ## ✨ Features
 
 ### 📋 Classic Todo Management
+
 - ✅ **Daily Task Management** - Add, complete, and delete tasks for each day
 - 📅 **Date Selection** - Schedule tasks for specific dates
 - ⏱️ **Duration Tracking** - Set estimated duration for each task (in minutes)
@@ -12,6 +13,7 @@ A modern, full-featured productivity application built with Next.js, Material-UI
 - 📊 **Weekly Statistics** - View your productivity stats
 
 ### 🎓 Learning Tracker (NEW!)
+
 - **📚 Multi-Track Organization** - Create custom learning tracks (JavaScript, MCP, CSS, etc.)
 - **📝 Topic Management** - Add topics to each track with target study times
 - **✍️ Smart Note-Taking** - For each topic, capture:
@@ -25,11 +27,13 @@ A modern, full-featured productivity application built with Next.js, Material-UI
 - **🎯 3-Column Layout** - Tracks sidebar → Topics list → Details panel
 
 ### 🔐 Multi-User Support
+
 - 🔒 **JWT Authentication** - Secure login/logout system
 - 👥 **User Isolation** - Each user sees only their own data
 - 🔑 **Password Hashing** - bcrypt encryption for user passwords
 
 ### 🎨 Modern UI/UX
+
 - 📱 **Responsive Design** - Works beautifully on desktop and mobile
 - 🎨 **Material-UI Components** - Clean, professional interface
 - 🚀 **Fast Navigation** - Switch between Todo and Learning Tracker modes
@@ -94,12 +98,14 @@ The app will use the database specified in your `DATABASE_URL`.
 ### Classic Todo Mode (Home Page)
 
 #### Adding a Task
+
 1. Fill in the **Task** field (e.g., "Complete project proposal")
 2. Select the **Date** (defaults to today)
 3. Enter the **Duration** in minutes (e.g., 30, 60, 120)
 4. Click **Add Task**
 
 #### Managing Tasks
+
 - **Complete a Task**: Click the checkbox next to the task
 - **Delete a Task**: Click the delete icon (🗑️) on the right
 - **View Different Periods**: Switch between "Today's Tasks" and "This Week" tabs
@@ -109,7 +115,9 @@ The app will use the database specified in your `DATABASE_URL`.
 Click the **"Learning Tracker"** button in the top navigation to access the learning management system.
 
 #### First-Time Setup
+
 On your first visit, the app automatically seeds 3 starter tracks:
+
 - **JavaScript Fundamentals** (13 topics)
 - **MCP Learning** (4 topics)
 - **CSS MDN Guides** (8 topics)
@@ -117,6 +125,7 @@ On your first visit, the app automatically seeds 3 starter tracks:
 You can edit or delete these anytime!
 
 #### Managing Tracks (Left Sidebar)
+
 - **Create Track**: Click "New Track" button
 - **Select Track**: Click on any track to view its topics
 - **Rename Track**: Click the ⋮ menu → Rename
@@ -124,6 +133,7 @@ You can edit or delete these anytime!
 - **View Progress**: See "completed/total" count for each track
 
 #### Managing Topics (Center Panel)
+
 - **Add Topic**: Click "Add Topic" button (requires track selection)
   - Enter title, target minutes, and optional source URL
 - **Toggle Completion**: Click checkbox to mark topic complete/incomplete
@@ -133,20 +143,25 @@ You can edit or delete these anytime!
 - **View Details**: Click anywhere on topic to open details panel
 
 #### Topic Details (Right Panel)
+
 **NOTES Tab:**
+
 - **Key Idea**: Core concept (e.g., "== vs ===, string comparisons, NaN")
 - **Example**: Code snippets or practical examples
 - **Recall Question**: Self-test questions for review
 - Click **SAVE NOTES** to persist changes
 
 **FORM Tab:**
+
 - Edit topic title, target minutes, source URL
 - View metadata (completion status, last studied, created date)
 - Click source link to open external resources
 - Click **SAVE CHANGES** to update
 
 #### Weekly Progress Cards
+
 View real-time stats for the selected track:
+
 - **Total Tasks**: All topics in the track
 - **Completed**: Finished topics (green)
 - **Remaining**: Topics to complete (orange)
@@ -249,6 +264,7 @@ Delete a todo
 Schema
 
 ### Models:
+
 1. **User** - Authentication (username, password)
 2. **Todo** - Classic todo items (task, date, duration, completed)
 3. **Track** - Learning tracks/categories (name, order)
@@ -284,7 +300,9 @@ npx prisma generate
 ## 🔧 Troubleshooting
 
 ### "Column does not exist" Error
+
 If you get Prisma errors after schema changes:
+
 ```bash
 rm -rf .next
 npx prisma generate
@@ -292,6 +310,7 @@ npm run dev
 ```
 
 ### Reset Database (Development Only)
+
 ```bash
 npx prisma migrate reset
 ```
@@ -299,6 +318,7 @@ npx prisma migrate reset
 ## 🎉 Features to Add
 
 Potential enhancements:
+
 - 📅 Calendar view for scheduled topics
 - 🔔 Reminders/notifications for scheduled topics
 - 📊 Analytics dashboard with charts
@@ -313,6 +333,7 @@ Potential enhancements:
 ---
 
 Built with ❤️ using Next.js, Material-UI, Prisma, and TypeScript
+
 - Task notes/descriptions
 
 ---

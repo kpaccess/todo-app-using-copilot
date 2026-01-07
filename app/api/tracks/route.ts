@@ -10,7 +10,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    console.log(`[TRACKS API] Fetching tracks for user: ${user.username} (${user.userId})`);
+    console.log(
+      `[TRACKS API] Fetching tracks for user: ${user.username} (${user.userId})`
+    );
 
     const tracks = await prisma.track.findMany({
       where: {
@@ -42,7 +44,7 @@ export async function GET(request: NextRequest) {
         _count: { topics: number };
         topics: { id: string }[];
       };
-      
+
       return {
         id: track.id,
         name: track.name,
@@ -53,8 +55,10 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    console.log(`[TRACKS API] Found ${tracks.length} tracks for user ${user.username}`);
-    tracksWithProgress.forEach(track => {
+    console.log(
+      `[TRACKS API] Found ${tracks.length} tracks for user ${user.username}`
+    );
+    tracksWithProgress.forEach((track) => {
       console.log(`  - Track: ${track.name} (${track.totalTopics} topics)`);
     });
 

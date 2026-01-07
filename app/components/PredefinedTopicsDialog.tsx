@@ -97,7 +97,13 @@ export default function PredefinedTopicsDialog({
     <>
       <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
         <DialogTitle>
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <Typography variant="h6">Browse Learning Topics</Typography>
             <IconButton onClick={onClose} size="small">
               <CloseIcon />

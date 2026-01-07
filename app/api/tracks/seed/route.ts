@@ -53,7 +53,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    console.log(`[SEED API] Seeding tracks for user: ${user.username} (${user.userId})`);
+    console.log(
+      `[SEED API] Seeding tracks for user: ${user.username} (${user.userId})`
+    );
 
     // Check if user already has tracks
     const existingTracks = await prisma.track.count({
@@ -63,15 +65,18 @@ export async function POST(request: NextRequest) {
     });
 
     if (existingTracks > 0) {
-      console.log(`[SEED API] User ${user.username} already has ${existingTracks} tracks, skipping seed`);
+      console.log(
+        `[SEED API] User ${user.username} already has ${existingTracks} tracks, skipping seed`
+      );
       return NextResponse.json(
         { message: "User already has tracks" },
         { status: 200 }
       );
     }
 
-    console.log(`[SEED API] User ${user.username} has no tracks, seeding defaults...`);
-
+    console.log(
+      `[SEED API] User ${user.username} has no tracks, seeding defaults...`
+    );
 
     // Seed default tracks
     const createdTracks = [];
@@ -98,11 +103,15 @@ export async function POST(request: NextRequest) {
         data: topicsData,
       });
 
-      console.log(`[SEED API] Created track "${track.name}" with ${topicsData.length} topics for user ${user.username}`);
+      console.log(
+        `[SEED API] Created track "${track.name}" with ${topicsData.length} topics for user ${user.username}`
+      );
       createdTracks.push(track);
     }
 
-    console.log(`[SEED API] Completed seeding ${createdTracks.length} tracks for user ${user.username}`);
+    console.log(
+      `[SEED API] Completed seeding ${createdTracks.length} tracks for user ${user.username}`
+    );
 
     return NextResponse.json(
       {

@@ -99,13 +99,25 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { topicId, title, trackId, targetMinutes = 15, scheduledDate, sourceUrl } = body || {};
+    const {
+      topicId,
+      title,
+      trackId,
+      targetMinutes = 15,
+      scheduledDate,
+      sourceUrl,
+    } = body || {};
 
     // If a predefined topicId is provided, add it to the todo list
     if (topicId && typeof topicId === "string") {
-      const predefinedTopic = await prisma.predefinedTopic.findUnique({ where: { id: topicId } });
+      const predefinedTopic = await prisma.predefinedTopic.findUnique({
+        where: { id: topicId },
+      });
       if (!predefinedTopic) {
-        return NextResponse.json({ error: "Predefined topic not found" }, { status: 404 });
+        return NextResponse.json(
+          { error: "Predefined topic not found" },
+          { status: 404 }
+        );
       }
 
       const todo = await prisma.todo.create({

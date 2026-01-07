@@ -8,11 +8,26 @@ const prisma = new PrismaClient({
 }).$extends(withAccelerate());
 
 const predefinedTopics = [
-  { title: 'JavaScript Basics', description: 'Learn the fundamentals of JavaScript.' },
-  { title: 'ES6 Features', description: 'Explore new features introduced in ES6.' },
-  { title: 'Asynchronous JavaScript', description: 'Understand promises, async/await, and event loops.' },
-  { title: 'JavaScript Design Patterns', description: 'Learn common design patterns in JavaScript.' },
-  { title: 'JavaScript Testing', description: 'Introduction to testing frameworks like Jest.' },
+  {
+    title: "JavaScript Basics",
+    description: "Learn the fundamentals of JavaScript.",
+  },
+  {
+    title: "ES6 Features",
+    description: "Explore new features introduced in ES6.",
+  },
+  {
+    title: "Asynchronous JavaScript",
+    description: "Understand promises, async/await, and event loops.",
+  },
+  {
+    title: "JavaScript Design Patterns",
+    description: "Learn common design patterns in JavaScript.",
+  },
+  {
+    title: "JavaScript Testing",
+    description: "Introduction to testing frameworks like Jest.",
+  },
 ];
 
 async function main() {

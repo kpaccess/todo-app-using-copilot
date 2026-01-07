@@ -2,17 +2,27 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 
-type Session = { id: string; task: string; date: string; duration: number; completed: boolean };
+type Session = {
+  id: string;
+  task: string;
+  date: string;
+  duration: number;
+  completed: boolean;
+};
 
 export default function TopicDetailPage() {
   const params = useParams();
-  const slug = Array.isArray(params?.slug) ? params.slug[0] : (params?.slug as string);
+  const slug = Array.isArray(params?.slug)
+    ? params.slug[0]
+    : (params?.slug as string);
   const title = decodeURIComponent(slug || "");
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
-  const [days, setDays] = useState<Array<{ day: string; totalMinutes: number; count: number }>>([]);
+  const [days, setDays] = useState<
+    Array<{ day: string; totalMinutes: number; count: number }>
+  >([]);
 
   useEffect(() => {
     const run = async () => {
@@ -20,7 +30,9 @@ export default function TopicDetailPage() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`/api/todos/by-topic?title=${encodeURIComponent(title)}`);
+        const res = await fetch(
+          `/api/todos/by-topic?title=${encodeURIComponent(title)}`
+        );
         const data = await res.json();
         if (!res.ok) throw new Error(data?.error || "Failed to load");
         setSessions(data.sessions || []);
@@ -52,9 +64,14 @@ export default function TopicDetailPage() {
         ) : (
           <ul className="divide-y">
             {days.map((d) => (
-              <li key={d.day} className="py-2 flex items-center justify-between">
+              <li
+                key={d.day}
+                className="py-2 flex items-center justify-between"
+              >
                 <span>{d.day}</span>
-                <span className="rounded bg-gray-200 px-2 py-0.5 text-sm">{d.totalMinutes} min</span>
+                <span className="rounded bg-gray-200 px-2 py-0.5 text-sm">
+                  {d.totalMinutes} min
+                </span>
               </li>
             ))}
           </ul>
@@ -68,12 +85,21 @@ export default function TopicDetailPage() {
         ) : (
           <ul className="space-y-2">
             {sessions.map((s) => (
-              <li key={s.id} className="border rounded p-2 flex items-center justify-between">
+              <li
+                key={s.id}
+                className="border rounded p-2 flex items-center justify-between"
+              >
                 <div>
-                  <div className="text-sm">{new Date(s.date).toLocaleString()}</div>
-                  <div className="text-xs text-gray-500">Completed: {s.completed ? "Yes" : "No"}</div>
+                  <div className="text-sm">
+                    {new Date(s.date).toLocaleString()}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    Completed: {s.completed ? "Yes" : "No"}
+                  </div>
                 </div>
-                <div className="rounded bg-gray-200 px-2 py-0.5 text-sm">{s.duration} min</div>
+                <div className="rounded bg-gray-200 px-2 py-0.5 text-sm">
+                  {s.duration} min
+                </div>
               </li>
             ))}
           </ul>

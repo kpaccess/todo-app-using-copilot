@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
 interface TopicPickerProps {
   onAddTopic?: (newTodo: any) => void;
@@ -17,11 +17,11 @@ const TopicPicker: React.FC<TopicPickerProps> = ({ onAddTopic }) => {
   useEffect(() => {
     const fetchTopics = async () => {
       try {
-        const response = await fetch('/api/predefined-topics');
+        const response = await fetch("/api/predefined-topics");
         const data = await response.json();
         setTopics(data);
       } catch (error) {
-        console.error('Failed to fetch topics:', error);
+        console.error("Failed to fetch topics:", error);
       } finally {
         setLoading(false);
       }
@@ -32,9 +32,9 @@ const TopicPicker: React.FC<TopicPickerProps> = ({ onAddTopic }) => {
 
   const handleAdd = async (topicId: string) => {
     try {
-      const response = await fetch('/api/topics', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/topics", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ topicId }),
       });
 
@@ -43,16 +43,18 @@ const TopicPicker: React.FC<TopicPickerProps> = ({ onAddTopic }) => {
         onAddTopic?.(newTodo);
         // Optional: navigate to detail page for this topic
         try {
-          const topic = topics.find(t => t.id === topicId);
+          const topic = topics.find((t) => t.id === topicId);
           if (topic?.title) {
-            window.location.assign(`/topics/${encodeURIComponent(topic.title)}`);
+            window.location.assign(
+              `/topics/${encodeURIComponent(topic.title)}`
+            );
           }
         } catch {}
       } else {
-        console.error('Failed to add topic to todo list');
+        console.error("Failed to add topic to todo list");
       }
     } catch (error) {
-      console.error('Error adding topic to todo list:', error);
+      console.error("Error adding topic to todo list:", error);
     }
   };
 

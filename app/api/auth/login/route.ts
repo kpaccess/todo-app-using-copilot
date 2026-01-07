@@ -41,7 +41,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`[LOGIN API] User logged in: ${user.username} (ID: ${user.id})`);
+    console.log(
+      `[LOGIN API] User logged in: ${user.username} (ID: ${user.id})`
+    );
 
     // Create JWT token
     const token = await new SignJWT({

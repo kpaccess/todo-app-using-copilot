@@ -57,4 +57,3 @@ export interface LearningWeeklyStats {
   remaining: number;
   timeMinutes: number;
 }
-
