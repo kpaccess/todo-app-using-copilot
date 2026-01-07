@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,23 +10,78 @@ model User {
   id        String   @id @default(cuid())
   username  String   @unique
   password  String
-  todos     Todo[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  todos     Todo[]
+  topics    Topic[]
+  tracks    Track[]
 }
 
 model Todo {
   id        String   @id @default(cuid())
   task      String
   date      DateTime
-  duration  Int // Duration in minutes
+  duration  Int
   completed Boolean  @default(false)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([date])
   @@index([completed])
   @@index([userId])
+}
+
+model Track {
+  id        String   @id @default(cuid())
+  name      String
+  order     Int      @default(0)
+  userId    String
+  createdAt DateTime @default(now())
+  topics    Topic[]
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, order])
+}
+
+model Topic {
+  id            String     @id @default(cuid())
+  title         String
+  targetMinutes Int        @default(15)
+  scheduledDate DateTime?
+  completed     Boolean    @default(false)
+  lastStudiedAt DateTime?
+  sourceUrl     String?
+  userId        String
+  trackId       String
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  track         Track      @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  note          TopicNote?
+
+  @@index([userId])
+  @@index([trackId])
+  @@index([completed])
+  @@index([userId, trackId])
+}
+
+model TopicNote {
+  id             String   @id @default(cuid())
+  topicId        String   @unique
+  keyIdea        String?
+  example        String?
+  recallQuestion String?
+  updatedAt      DateTime @updatedAt
+  topic          Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+}
+
+model PredefinedTopic {
+  id          String   @id @default(cuid())
+  title       String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

@@ -4,6 +4,8 @@ import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
 import { JWT_SECRET_KEY } from "@/lib/auth";
 
+const encoder = new TextEncoder();
+
 // POST login user
 export async function POST(request: NextRequest) {
   try {
@@ -38,6 +40,8 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
+
+    console.log(`[LOGIN API] User logged in: ${user.username} (ID: ${user.id})`);
 
     // Create JWT token
     const token = await new SignJWT({

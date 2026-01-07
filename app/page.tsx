@@ -238,6 +238,13 @@ export default function Home() {
           </Typography>
           <Button
             color="inherit"
+            onClick={() => router.push("/learning")}
+            sx={{ mr: 2 }}
+          >
+            Learning Tracker
+          </Button>
+          <Button
+            color="inherit"
             onClick={handleLogout}
             startIcon={<LogoutIcon />}
           >
